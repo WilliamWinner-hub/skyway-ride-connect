@@ -358,7 +358,11 @@ const Airlines = () => {
                       "NRT - Tokyo",
                       "DXB - Dubai",
                       "SIN - Singapore",
-                      "FRA - Frankfurt"
+                      "FRA - Frankfurt",
+                      "LOS - Lagos, Nigeria",
+                      "ABV - Abuja, Nigeria",
+                      "KAN - Kano, Nigeria",
+                      "PHC - Port Harcourt, Nigeria"
                     ].map((airport, index) => (
                       <div key={index} className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-accent rounded-full"></div>

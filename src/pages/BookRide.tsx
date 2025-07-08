@@ -40,10 +40,10 @@ const BookRide = () => {
   };
 
   const rideOptions = [
-    { value: "economy", label: "Economy Ride", price: "$25-35", description: "Comfortable standard vehicles" },
-    { value: "premium", label: "Premium Ride", price: "$45-60", description: "Luxury vehicles with amenities" },
-    { value: "executive", label: "Executive Ride", price: "$75-95", description: "Premium chauffeur service" },
-    { value: "group", label: "Group Ride", price: "$60-80", description: "Large vehicles for groups" }
+    { value: "economy", label: "Economy Ride", price: "₦40,000-55,000", description: "Comfortable standard vehicles" },
+    { value: "premium", label: "Premium Ride", price: "₦70,000-95,000", description: "Luxury vehicles with amenities" },
+    { value: "executive", label: "Executive Ride", price: "₦120,000-150,000", description: "Premium chauffeur service" },
+    { value: "group", label: "Group Ride", price: "₦95,000-125,000", description: "Large vehicles for groups" }
   ];
 
   return (

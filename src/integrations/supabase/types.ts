@@ -14,7 +14,434 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      airline_partnerships: {
+        Row: {
+          airline_name: string
+          airports: string[] | null
+          commission_rate: number | null
+          contact_person: string
+          created_at: string | null
+          email: string
+          headquarters: string | null
+          iata_code: string | null
+          id: string
+          partnership_type: string | null
+          phone: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          airline_name: string
+          airports?: string[] | null
+          commission_rate?: number | null
+          contact_person: string
+          created_at?: string | null
+          email: string
+          headquarters?: string | null
+          iata_code?: string | null
+          id?: string
+          partnership_type?: string | null
+          phone?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          airline_name?: string
+          airports?: string[] | null
+          commission_rate?: number | null
+          contact_person?: string
+          created_at?: string | null
+          email?: string
+          headquarters?: string | null
+          iata_code?: string | null
+          id?: string
+          partnership_type?: string | null
+          phone?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      airports: {
+        Row: {
+          city: string
+          code: string
+          country: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          latitude: number | null
+          longitude: number | null
+          name: string
+          timezone: string | null
+        }
+        Insert: {
+          city: string
+          code: string
+          country: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          timezone?: string | null
+        }
+        Update: {
+          city?: string
+          code?: string
+          country?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          timezone?: string | null
+        }
+        Relationships: []
+      }
+      drivers: {
+        Row: {
+          airport_id: string | null
+          created_at: string | null
+          current_latitude: number | null
+          current_longitude: number | null
+          documents: Json | null
+          id: string
+          is_available: boolean | null
+          license_expiry: string
+          license_number: string
+          rating: number | null
+          status: Database["public"]["Enums"]["driver_status"] | null
+          total_rides: number | null
+          updated_at: string | null
+          user_id: string
+          vehicle_color: string | null
+          vehicle_make: string
+          vehicle_model: string
+          vehicle_plate: string
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"]
+          vehicle_year: number
+        }
+        Insert: {
+          airport_id?: string | null
+          created_at?: string | null
+          current_latitude?: number | null
+          current_longitude?: number | null
+          documents?: Json | null
+          id?: string
+          is_available?: boolean | null
+          license_expiry: string
+          license_number: string
+          rating?: number | null
+          status?: Database["public"]["Enums"]["driver_status"] | null
+          total_rides?: number | null
+          updated_at?: string | null
+          user_id: string
+          vehicle_color?: string | null
+          vehicle_make: string
+          vehicle_model: string
+          vehicle_plate: string
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"]
+          vehicle_year: number
+        }
+        Update: {
+          airport_id?: string | null
+          created_at?: string | null
+          current_latitude?: number | null
+          current_longitude?: number | null
+          documents?: Json | null
+          id?: string
+          is_available?: boolean | null
+          license_expiry?: string
+          license_number?: string
+          rating?: number | null
+          status?: Database["public"]["Enums"]["driver_status"] | null
+          total_rides?: number | null
+          updated_at?: string | null
+          user_id?: string
+          vehicle_color?: string | null
+          vehicle_make?: string
+          vehicle_model?: string
+          vehicle_plate?: string
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"]
+          vehicle_year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drivers_airport_id_fkey"
+            columns: ["airport_id"]
+            isOneToOne: false
+            referencedRelation: "airports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: string | null
+          id: string
+          payment_method: string
+          provider_reference: string | null
+          ride_id: string
+          status: Database["public"]["Enums"]["payment_status"] | null
+          transaction_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          payment_method: string
+          provider_reference?: string | null
+          ride_id: string
+          status?: Database["public"]["Enums"]["payment_status"] | null
+          transaction_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          payment_method?: string
+          provider_reference?: string | null
+          ride_id?: string
+          status?: Database["public"]["Enums"]["payment_status"] | null
+          transaction_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "rides"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string
+          full_name: string
+          id: string
+          is_verified: boolean | null
+          phone: string | null
+          role: Database["public"]["Enums"]["user_role"] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email: string
+          full_name: string
+          id?: string
+          is_verified?: boolean | null
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          is_verified?: boolean | null
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ride_tracking: {
+        Row: {
+          driver_latitude: number | null
+          driver_longitude: number | null
+          id: string
+          passenger_latitude: number | null
+          passenger_longitude: number | null
+          ride_id: string
+          status: string | null
+          timestamp: string | null
+        }
+        Insert: {
+          driver_latitude?: number | null
+          driver_longitude?: number | null
+          id?: string
+          passenger_latitude?: number | null
+          passenger_longitude?: number | null
+          ride_id: string
+          status?: string | null
+          timestamp?: string | null
+        }
+        Update: {
+          driver_latitude?: number | null
+          driver_longitude?: number | null
+          id?: string
+          passenger_latitude?: number | null
+          passenger_longitude?: number | null
+          ride_id?: string
+          status?: string | null
+          timestamp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ride_tracking_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "rides"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rides: {
+        Row: {
+          airport_id: string
+          completion_time: string | null
+          created_at: string | null
+          currency: string | null
+          destination_latitude: number
+          destination_location: string
+          destination_longitude: number
+          distance_km: number | null
+          driver_id: string | null
+          estimated_duration: number | null
+          fare_amount: number
+          id: string
+          passenger_count: number | null
+          passenger_id: string
+          pickup_latitude: number
+          pickup_location: string
+          pickup_longitude: number
+          pickup_time: string | null
+          qr_code: string | null
+          rating: number | null
+          review: string | null
+          scheduled_time: string | null
+          special_requests: string | null
+          status: Database["public"]["Enums"]["ride_status"] | null
+          updated_at: string | null
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"]
+        }
+        Insert: {
+          airport_id: string
+          completion_time?: string | null
+          created_at?: string | null
+          currency?: string | null
+          destination_latitude: number
+          destination_location: string
+          destination_longitude: number
+          distance_km?: number | null
+          driver_id?: string | null
+          estimated_duration?: number | null
+          fare_amount: number
+          id?: string
+          passenger_count?: number | null
+          passenger_id: string
+          pickup_latitude: number
+          pickup_location: string
+          pickup_longitude: number
+          pickup_time?: string | null
+          qr_code?: string | null
+          rating?: number | null
+          review?: string | null
+          scheduled_time?: string | null
+          special_requests?: string | null
+          status?: Database["public"]["Enums"]["ride_status"] | null
+          updated_at?: string | null
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"]
+        }
+        Update: {
+          airport_id?: string
+          completion_time?: string | null
+          created_at?: string | null
+          currency?: string | null
+          destination_latitude?: number
+          destination_location?: string
+          destination_longitude?: number
+          distance_km?: number | null
+          driver_id?: string | null
+          estimated_duration?: number | null
+          fare_amount?: number
+          id?: string
+          passenger_count?: number | null
+          passenger_id?: string
+          pickup_latitude?: number
+          pickup_location?: string
+          pickup_longitude?: number
+          pickup_time?: string | null
+          qr_code?: string | null
+          rating?: number | null
+          review?: string | null
+          scheduled_time?: string | null
+          special_requests?: string | null
+          status?: Database["public"]["Enums"]["ride_status"] | null
+          updated_at?: string | null
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rides_airport_id_fkey"
+            columns: ["airport_id"]
+            isOneToOne: false
+            referencedRelation: "airports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          created_at: string | null
+          currency: string | null
+          end_date: string | null
+          features: Json | null
+          id: string
+          price: number
+          start_date: string | null
+          status: string | null
+          type: Database["public"]["Enums"]["subscription_type"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          currency?: string | null
+          end_date?: string | null
+          features?: Json | null
+          id?: string
+          price: number
+          start_date?: string | null
+          status?: string | null
+          type: Database["public"]["Enums"]["subscription_type"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          currency?: string | null
+          end_date?: string | null
+          features?: Json | null
+          id?: string
+          price?: number
+          start_date?: string | null
+          status?: string | null
+          type?: Database["public"]["Enums"]["subscription_type"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +450,17 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      driver_status: "pending" | "approved" | "suspended" | "active" | "offline"
+      payment_status: "pending" | "completed" | "failed" | "refunded"
+      ride_status:
+        | "pending"
+        | "accepted"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
+      subscription_type: "basic" | "premium" | "enterprise"
+      user_role: "passenger" | "driver" | "airline_admin" | "super_admin"
+      vehicle_type: "sedan" | "suv" | "luxury" | "van" | "bus"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +587,19 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      driver_status: ["pending", "approved", "suspended", "active", "offline"],
+      payment_status: ["pending", "completed", "failed", "refunded"],
+      ride_status: [
+        "pending",
+        "accepted",
+        "in_progress",
+        "completed",
+        "cancelled",
+      ],
+      subscription_type: ["basic", "premium", "enterprise"],
+      user_role: ["passenger", "driver", "airline_admin", "super_admin"],
+      vehicle_type: ["sedan", "suv", "luxury", "van", "bus"],
+    },
   },
 } as const

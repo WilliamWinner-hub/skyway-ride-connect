@@ -60,16 +60,10 @@ const Navigation = () => {
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/login">
-                <LogIn className="h-4 w-4" />
-                Login
-              </Link>
-            </Button>
             <Button variant="hero" size="sm" asChild>
-              <Link to="/signup">
-                <UserCheck className="h-4 w-4" />
-                Sign Up
+              <Link to="/auth">
+                <LogIn className="h-4 w-4" />
+                Login / Sign Up
               </Link>
             </Button>
           </div>
@@ -108,17 +102,11 @@ const Navigation = () => {
                   </Link>
                 );
               })}
-              <div className="pt-4 space-y-2">
-                <Button variant="outline" className="w-full" asChild>
-                  <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                    <LogIn className="h-4 w-4" />
-                    Login
-                  </Link>
-                </Button>
+              <div className="pt-4">
                 <Button variant="hero" className="w-full" asChild>
-                  <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
-                    <UserCheck className="h-4 w-4" />
-                    Sign Up
+                  <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
+                    <LogIn className="h-4 w-4" />
+                    Login / Sign Up
                   </Link>
                 </Button>
               </div>

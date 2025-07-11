@@ -178,6 +178,36 @@ export type Database = {
           },
         ]
       }
+      otps: {
+        Row: {
+          attempts: number | null
+          code: string
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          is_used: boolean | null
+        }
+        Insert: {
+          attempts?: number | null
+          code: string
+          created_at?: string
+          email: string
+          expires_at: string
+          id?: string
+          is_used?: boolean | null
+        }
+        Update: {
+          attempts?: number | null
+          code?: string
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          is_used?: boolean | null
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
@@ -447,7 +477,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cleanup_expired_otps: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       driver_status: "pending" | "approved" | "suspended" | "active" | "offline"

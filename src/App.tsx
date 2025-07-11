@@ -8,6 +8,7 @@ import BookRide from "./pages/BookRide";
 import Drivers from "./pages/Drivers";
 import Garages from "./pages/Garages";
 import Airlines from "./pages/Airlines";
+import Auth from "./pages/Auth";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/drivers" element={<Drivers />} />
           <Route path="/garages" element={<Garages />} />
           <Route path="/airlines" element={<Airlines />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -1,1 +1,25 @@
 project_id = "ojqwpwxsckyiwnbxbosc"
+
+[functions.rides]
+verify_jwt = false
+
+[functions.drivers]
+verify_jwt = false
+
+[functions.auth-management]
+verify_jwt = false
+
+[functions.payments]
+verify_jwt = false
+
+[functions.subscriptions]
+verify_jwt = false
+
+[functions.airline-partnerships]
+verify_jwt = false
+
+[functions.qr-tickets]
+verify_jwt = false
+
+[functions.otp-auth]
+verify_jwt = false

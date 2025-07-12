@@ -5,17 +5,25 @@ import {
   Menu, 
   User, 
   LogIn, 
+  LogOut,
   Settings,
   MapPin,
   Calendar,
   UserCheck
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, profile, signOut, loading } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleSignOut = async () => {
+    await signOut();
+    setIsMenuOpen(false);
+  };
 
   const navigationLinks = [
     { name: "Home", path: "/", icon: null },
@@ -60,12 +68,26 @@ const Navigation = () => {
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="hero" size="sm" asChild>
-              <Link to="/auth">
-                <LogIn className="h-4 w-4" />
-                Login / Sign Up
-              </Link>
-            </Button>
+            {loading ? (
+              <div className="w-24 h-8 bg-muted rounded animate-pulse" />
+            ) : user ? (
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-muted-foreground">
+                  Welcome, {profile?.full_name || user.email}
+                </span>
+                <Button variant="outline" size="sm" onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <Button variant="hero" size="sm" asChild>
+                <Link to="/auth">
+                  <LogIn className="h-4 w-4" />
+                  Login / Sign Up
+                </Link>
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -103,12 +125,26 @@ const Navigation = () => {
                 );
               })}
               <div className="pt-4">
-                <Button variant="hero" className="w-full" asChild>
-                  <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
-                    <LogIn className="h-4 w-4" />
-                    Login / Sign Up
-                  </Link>
-                </Button>
+                {loading ? (
+                  <div className="w-full h-10 bg-muted rounded animate-pulse" />
+                ) : user ? (
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground px-3">
+                      Welcome, {profile?.full_name || user.email}
+                    </p>
+                    <Button variant="outline" className="w-full" onClick={handleSignOut}>
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
+                    </Button>
+                  </div>
+                ) : (
+                  <Button variant="hero" className="w-full" asChild>
+                    <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
+                      <LogIn className="h-4 w-4" />
+                      Login / Sign Up
+                    </Link>
+                  </Button>
+                )}
               </div>
             </div>
           </div>

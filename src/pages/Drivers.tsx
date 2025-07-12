@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,10 +43,11 @@ const Drivers = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <ProtectedRoute requireAuth={true}>
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-6xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-12">
@@ -292,8 +294,9 @@ const Drivers = () => {
             </div>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 };
 

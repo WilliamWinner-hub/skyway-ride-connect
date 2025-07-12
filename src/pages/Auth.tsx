@@ -6,9 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, ArrowLeft } from 'lucide-react';
+import { Loader2, ArrowLeft, User, Car, Building, Plane } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface OTPResponse {
   success: boolean;
@@ -29,14 +31,26 @@ interface VerifyResponse {
   error?: string;
 }
 
+type UserRole = 'passenger' | 'driver' | 'airline_admin' | 'super_admin';
+
 export default function Auth() {
   const navigate = useNavigate();
-  const [step, setStep] = useState<'email' | 'otp'>('email');
+  const { user, loading: authLoading } = useAuth();
+  const [step, setStep] = useState<'email' | 'role' | 'otp'>('email');
   const [email, setEmail] = useState('');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('passenger');
+  const [fullName, setFullName] = useState('');
   const [otp, setOtp] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (user && !authLoading) {
+      navigate('/');
+    }
+  }, [user, authLoading, navigate]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -66,8 +80,7 @@ export default function Auth() {
       
       if (response.success) {
         toast.success(response.message);
-        setStep('otp');
-        setResendCooldown(30);
+        setStep('role');
       } else {
         toast.error(response.error || 'Failed to send OTP');
       }
@@ -77,6 +90,15 @@ export default function Auth() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const proceedToOTP = () => {
+    if (!fullName.trim()) {
+      toast.error('Please enter your full name');
+      return;
+    }
+    setStep('otp');
+    setResendCooldown(30);
   };
 
   const verifyOTP = async () => {
@@ -96,11 +118,30 @@ export default function Auth() {
       const response: VerifyResponse = data;
       
       if (response.success) {
-        toast.success(response.message);
-        
         // Set session in Supabase client if provided
         if (response.session) {
           await supabase.auth.setSession(response.session);
+        }
+
+        // Create or update profile with role and full name
+        if (response.isNewUser) {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+              user_id: response.user.id,
+              email: response.user.email,
+              full_name: fullName,
+              role: selectedRole,
+            });
+
+          if (profileError) {
+            console.error('Profile creation error:', profileError);
+            toast.error('Account created but profile setup failed. Please contact support.');
+          } else {
+            toast.success(`Welcome! Your ${selectedRole} account has been created.`);
+          }
+        } else {
+          toast.success('Welcome back!');
         }
         
         // Store remember me preference
@@ -108,7 +149,19 @@ export default function Auth() {
           localStorage.setItem('aeroride_remember_me', 'true');
         }
         
-        navigate('/');
+        // Navigate based on role
+        setTimeout(() => {
+          switch (selectedRole) {
+            case 'driver':
+              navigate('/drivers');
+              break;
+            case 'airline_admin':
+              navigate('/airlines');
+              break;
+            default:
+              navigate('/');
+          }
+        }, 1000);
       } else {
         toast.error(response.error || 'Invalid OTP');
       }
@@ -126,20 +179,54 @@ export default function Auth() {
   };
 
   const goBack = () => {
-    setStep('email');
+    if (step === 'otp') {
+      setStep('role');
+    } else {
+      setStep('email');
+    }
     setOtp('');
   };
+
+  const roleOptions = [
+    { 
+      value: 'passenger' as UserRole, 
+      label: 'Passenger', 
+      description: 'Book airport rides and manage your travel',
+      icon: User 
+    },
+    { 
+      value: 'driver' as UserRole, 
+      label: 'Driver', 
+      description: 'Drive for premium airport transportation',
+      icon: Car 
+    },
+    { 
+      value: 'driver' as UserRole, 
+      label: 'Garage Partner', 
+      description: 'Manage fleet and driver operations',
+      icon: Building 
+    },
+    { 
+      value: 'airline_admin' as UserRole, 
+      label: 'Airline Partner', 
+      description: 'Integrate ground transportation services',
+      icon: Plane 
+    }
+  ];
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            {step === 'email' ? 'Welcome to AeroRide Nexus' : 'Enter Verification Code'}
+            {step === 'email' ? 'Welcome to AeroRide Nexus' : 
+             step === 'role' ? 'Choose Your Role' : 'Enter Verification Code'}
           </CardTitle>
           <CardDescription className="text-center">
             {step === 'email' 
-              ? 'Enter your email to receive a verification code'
+              ? 'Enter your email to get started'
+              : step === 'role'
+              ? 'Select how you plan to use our platform'
               : `We sent a 6-digit code to ${email}`
             }
           </CardDescription>
@@ -173,6 +260,65 @@ export default function Auth() {
                 ) : (
                   'Send Verification Code'
                 )}
+              </Button>
+            </>
+          ) : step === 'role' ? (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input
+                  id="fullName"
+                  placeholder="Enter your full name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-3">
+                <Label>I want to:</Label>
+                {roleOptions.map((role) => {
+                  const Icon = role.icon;
+                  return (
+                    <div
+                      key={role.value}
+                      className={`p-4 rounded-lg border cursor-pointer transition-all hover:border-primary ${
+                        selectedRole === role.value ? "border-primary bg-primary/5" : "border-border"
+                      }`}
+                      onClick={() => setSelectedRole(role.value)}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <Icon className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-foreground">
+                            {role.label}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {role.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <Button 
+                onClick={proceedToOTP} 
+                disabled={!fullName.trim()}
+                className="w-full"
+              >
+                Continue to Verification
+              </Button>
+
+              <Button
+                variant="ghost"
+                onClick={goBack}
+                className="w-full text-sm"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to email
               </Button>
             </>
           ) : (

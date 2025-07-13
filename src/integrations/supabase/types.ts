@@ -62,6 +62,66 @@ export type Database = {
         }
         Relationships: []
       }
+      airline_profiles: {
+        Row: {
+          airline_name: string
+          commission_rate: number | null
+          contact_person: string | null
+          contact_position: string | null
+          contract_details: Json | null
+          created_at: string | null
+          destinations_served: string[] | null
+          email_address: string | null
+          fleet_size: number | null
+          iata_code: string | null
+          id: string
+          office_address: string | null
+          partnership_type: string | null
+          phone_number: string | null
+          preferred_airports: string[] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          airline_name: string
+          commission_rate?: number | null
+          contact_person?: string | null
+          contact_position?: string | null
+          contract_details?: Json | null
+          created_at?: string | null
+          destinations_served?: string[] | null
+          email_address?: string | null
+          fleet_size?: number | null
+          iata_code?: string | null
+          id?: string
+          office_address?: string | null
+          partnership_type?: string | null
+          phone_number?: string | null
+          preferred_airports?: string[] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          airline_name?: string
+          commission_rate?: number | null
+          contact_person?: string | null
+          contact_position?: string | null
+          contract_details?: Json | null
+          created_at?: string | null
+          destinations_served?: string[] | null
+          email_address?: string | null
+          fleet_size?: number | null
+          iata_code?: string | null
+          id?: string
+          office_address?: string | null
+          partnership_type?: string | null
+          phone_number?: string | null
+          preferred_airports?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       airports: {
         Row: {
           city: string
@@ -98,6 +158,72 @@ export type Database = {
           longitude?: number | null
           name?: string
           timezone?: string | null
+        }
+        Relationships: []
+      }
+      driver_profiles: {
+        Row: {
+          availability_schedule: Json | null
+          background_check_status: string | null
+          created_at: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          experience_years: number | null
+          id: string
+          insurance_policy_number: string | null
+          license_expiry: string | null
+          license_number: string | null
+          preferred_airports: string[] | null
+          updated_at: string | null
+          user_id: string
+          vehicle_color: string | null
+          vehicle_make: string | null
+          vehicle_model: string | null
+          vehicle_plate: string | null
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null
+          vehicle_year: number | null
+        }
+        Insert: {
+          availability_schedule?: Json | null
+          background_check_status?: string | null
+          created_at?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          experience_years?: number | null
+          id?: string
+          insurance_policy_number?: string | null
+          license_expiry?: string | null
+          license_number?: string | null
+          preferred_airports?: string[] | null
+          updated_at?: string | null
+          user_id: string
+          vehicle_color?: string | null
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_plate?: string | null
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null
+          vehicle_year?: number | null
+        }
+        Update: {
+          availability_schedule?: Json | null
+          background_check_status?: string | null
+          created_at?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          experience_years?: number | null
+          id?: string
+          insurance_policy_number?: string | null
+          license_expiry?: string | null
+          license_number?: string | null
+          preferred_airports?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+          vehicle_color?: string | null
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_plate?: string | null
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null
+          vehicle_year?: number | null
         }
         Relationships: []
       }
@@ -177,6 +303,66 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      garage_profiles: {
+        Row: {
+          business_license: string | null
+          business_name: string
+          capacity: number | null
+          certification_documents: Json | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string | null
+          id: string
+          insurance_details: Json | null
+          location_address: string | null
+          location_latitude: number | null
+          location_longitude: number | null
+          operating_hours: Json | null
+          services_offered: string[] | null
+          specialties: string[] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          business_license?: string | null
+          business_name: string
+          capacity?: number | null
+          certification_documents?: Json | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          id?: string
+          insurance_details?: Json | null
+          location_address?: string | null
+          location_latitude?: number | null
+          location_longitude?: number | null
+          operating_hours?: Json | null
+          services_offered?: string[] | null
+          specialties?: string[] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          business_license?: string | null
+          business_name?: string
+          capacity?: number | null
+          certification_documents?: Json | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          id?: string
+          insurance_details?: Json | null
+          location_address?: string | null
+          location_latitude?: number | null
+          location_longitude?: number | null
+          operating_hours?: Json | null
+          services_offered?: string[] | null
+          specialties?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       otps: {
         Row: {
@@ -480,6 +666,10 @@ export type Database = {
       cleanup_expired_otps: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      is_admin_user: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
       }
     }
     Enums: {

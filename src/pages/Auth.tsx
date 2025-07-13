@@ -31,7 +31,7 @@ interface VerifyResponse {
   error?: string;
 }
 
-type UserRole = 'passenger' | 'driver' | 'airline_admin' | 'super_admin';
+type UserRole = 'passenger' | 'driver' | 'garage_partner' | 'airline_partner';
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -123,24 +123,89 @@ export default function Auth() {
           await supabase.auth.setSession(response.session);
         }
 
+        // Map frontend roles to database enum values
+        let dbRole: 'passenger' | 'driver' | 'airline_admin' | 'super_admin';
+        switch (selectedRole) {
+          case 'driver':
+            dbRole = 'driver';
+            break;
+          case 'garage_partner':
+            dbRole = 'driver'; // Garage partners are drivers in the system
+            break;
+          case 'airline_partner':
+            dbRole = 'airline_admin';
+            break;
+          default:
+            dbRole = 'passenger';
+        }
+
         // Create or update profile with role and full name
         if (response.isNewUser) {
           const { error: profileError } = await supabase
             .from('profiles')
-            .insert({
-              user_id: response.user.id,
-              email: response.user.email,
+            .update({
               full_name: fullName,
-              role: selectedRole,
-            });
+              role: dbRole,
+            })
+            .eq('user_id', response.user.id);
 
           if (profileError) {
-            console.error('Profile creation error:', profileError);
+            console.error('Profile update error:', profileError);
             toast.error('Account created but profile setup failed. Please contact support.');
-          } else {
-            toast.success(`Welcome! Your ${selectedRole} account has been created.`);
+            return;
           }
+
+          // Create role-specific profile
+          try {
+            if (selectedRole === 'driver') {
+              const { error: driverError } = await supabase
+                .from('driver_profiles')
+                .insert({
+                  user_id: response.user.id,
+                  experience_years: 0,
+                  background_check_status: 'pending'
+                });
+              if (driverError) console.error('Driver profile creation error:', driverError);
+            } else if (selectedRole === 'garage_partner') {
+              const { error: garageError } = await supabase
+                .from('garage_profiles')
+                .insert({
+                  user_id: response.user.id,
+                  business_name: fullName + "'s Garage",
+                  contact_email: email,
+                  capacity: 10
+                });
+              if (garageError) console.error('Garage profile creation error:', garageError);
+            } else if (selectedRole === 'airline_partner') {
+              const { error: airlineError } = await supabase
+                .from('airline_profiles')
+                .insert({
+                  user_id: response.user.id,
+                  airline_name: fullName + " Airlines",
+                  contact_person: fullName,
+                  email_address: email,
+                  partnership_type: 'standard',
+                  commission_rate: 0.05
+                });
+              if (airlineError) console.error('Airline profile creation error:', airlineError);
+            }
+          } catch (roleProfileError) {
+            console.error('Role-specific profile creation error:', roleProfileError);
+            // Don't block login for role profile creation errors
+          }
+
+          toast.success(`Welcome! Your ${selectedRole.replace('_', ' ')} account has been created.`);
         } else {
+          // Update existing user's role if needed
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ role: dbRole })
+            .eq('user_id', response.user.id);
+          
+          if (updateError) {
+            console.error('Profile role update error:', updateError);
+          }
+          
           toast.success('Welcome back!');
         }
         
@@ -155,11 +220,14 @@ export default function Auth() {
             case 'driver':
               navigate('/drivers');
               break;
-            case 'airline_admin':
+            case 'garage_partner':
+              navigate('/garages');
+              break;
+            case 'airline_partner':
               navigate('/airlines');
               break;
             default:
-              navigate('/');
+              navigate('/book-ride');
           }
         }, 1000);
       } else {
@@ -201,13 +269,13 @@ export default function Auth() {
       icon: Car 
     },
     { 
-      value: 'driver' as UserRole, 
+      value: 'garage_partner' as UserRole, 
       label: 'Garage Partner', 
       description: 'Manage fleet and driver operations',
       icon: Building 
     },
     { 
-      value: 'airline_admin' as UserRole, 
+      value: 'airline_partner' as UserRole, 
       label: 'Airline Partner', 
       description: 'Integrate ground transportation services',
       icon: Plane 

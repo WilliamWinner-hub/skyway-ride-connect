@@ -211,13 +211,22 @@ serve(async (req) => {
           isNewUser = true;
 
           // Create profile
-          await supabaseClient
+          const { error: profileError } = await supabaseClient
             .from('profiles')
             .insert({
               user_id: userId,
               email,
               full_name: email.split('@')[0],
+              role: 'passenger' // Default role
             });
+
+          if (profileError) {
+            console.error('Profile creation error:', profileError);
+            return new Response(JSON.stringify({ error: 'Failed to create user profile' }), {
+              status: 500,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            });
+          }
         }
 
         // Generate session token

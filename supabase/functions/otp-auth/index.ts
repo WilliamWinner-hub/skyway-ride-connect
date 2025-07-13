@@ -93,7 +93,7 @@ serve(async (req) => {
 
         // Generate new OTP
         const code = generateOTP();
-        const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
         // Store OTP in database
         const { error: insertError } = await supabaseClient
@@ -125,7 +125,7 @@ serve(async (req) => {
                 <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
                   <h1 style="margin: 0; font-size: 32px; letter-spacing: 4px; text-align: center; color: #1f2937;">${code}</h1>
                 </div>
-                <p style="color: #6b7280; font-size: 14px;">This code will expire in 5 minutes.</p>
+                <p style="color: #6b7280; font-size: 14px;">This code will expire in 10 minutes.</p>
                 <p style="color: #6b7280; font-size: 14px;">If you didn't request this code, please ignore this email.</p>
               </div>
             `,
@@ -156,19 +156,40 @@ serve(async (req) => {
           });
         }
 
-        // Find valid OTP
+        // Find valid OTP - fix the query to be more lenient
         const { data: otpData, error: otpError } = await supabaseClient
           .from('otps')
           .select('*')
           .eq('email', email)
           .eq('code', code)
           .eq('is_used', false)
-          .gte('expires_at', new Date().toISOString())
           .order('created_at', { ascending: false })
-          .limit(1)
-          .single();
+          .limit(1);
 
-        if (otpError || !otpData) {
+        if (otpError) {
+          console.error('OTP query error:', otpError);
+          return new Response(JSON.stringify({ error: 'Database error during OTP verification' }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
+        if (!otpData || otpData.length === 0) {
+          console.log('No OTP found for email:', email, 'code:', code);
+          return new Response(JSON.stringify({ error: 'Invalid or expired OTP' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
+        const otp = otpData[0];
+        
+        // Check if OTP is expired
+        const now = new Date();
+        const expiresAt = new Date(otp.expires_at);
+        
+        if (now > expiresAt) {
+          console.log('OTP expired. Now:', now, 'Expires:', expiresAt);
           return new Response(JSON.stringify({ error: 'Invalid or expired OTP' }), {
             status: 400,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -179,7 +200,7 @@ serve(async (req) => {
         await supabaseClient
           .from('otps')
           .update({ is_used: true })
-          .eq('id', otpData.id);
+          .eq('id', otp.id);
 
         // Check if user exists
         const { data: existingProfile } = await supabaseClient

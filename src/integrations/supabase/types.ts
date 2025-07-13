@@ -682,7 +682,13 @@ export type Database = {
         | "completed"
         | "cancelled"
       subscription_type: "basic" | "premium" | "enterprise"
-      user_role: "passenger" | "driver" | "airline_admin" | "super_admin"
+      user_role:
+        | "passenger"
+        | "driver"
+        | "airline_admin"
+        | "super_admin"
+        | "garage_partner"
+        | "airline_partner"
       vehicle_type: "sedan" | "suv" | "luxury" | "van" | "bus"
     }
     CompositeTypes: {
@@ -821,7 +827,14 @@ export const Constants = {
         "cancelled",
       ],
       subscription_type: ["basic", "premium", "enterprise"],
-      user_role: ["passenger", "driver", "airline_admin", "super_admin"],
+      user_role: [
+        "passenger",
+        "driver",
+        "airline_admin",
+        "super_admin",
+        "garage_partner",
+        "airline_partner",
+      ],
       vehicle_type: ["sedan", "suv", "luxury", "van", "bus"],
     },
   },

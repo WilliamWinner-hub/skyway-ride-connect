@@ -123,21 +123,8 @@ export default function Auth() {
           await supabase.auth.setSession(response.session);
         }
 
-        // Map frontend roles to database enum values
-        let dbRole: 'passenger' | 'driver' | 'airline_admin' | 'super_admin';
-        switch (selectedRole) {
-          case 'driver':
-            dbRole = 'driver';
-            break;
-          case 'garage_partner':
-            dbRole = 'driver'; // Garage partners are drivers in the system
-            break;
-          case 'airline_partner':
-            dbRole = 'airline_admin';
-            break;
-          default:
-            dbRole = 'passenger';
-        }
+        // Map frontend roles to database enum values (now that we have all enum values)
+        const dbRole = selectedRole; // Direct mapping now works
 
         // Create or update profile with role and full name
         if (response.isNewUser) {

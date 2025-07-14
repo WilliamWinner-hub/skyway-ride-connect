@@ -35,7 +35,7 @@ type UserRole = 'passenger' | 'driver' | 'garage_partner' | 'airline_partner';
 
 export default function Auth() {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const [step, setStep] = useState<'email' | 'role' | 'otp'>('email');
   const [email, setEmail] = useState('');
   const [selectedRole, setSelectedRole] = useState<UserRole>('passenger');
@@ -47,10 +47,23 @@ export default function Auth() {
 
   // Redirect if already authenticated
   useEffect(() => {
-    if (user && !authLoading) {
-      navigate('/');
+    if (user && !authLoading && profile) {
+      // Navigate based on user's role
+      switch (profile.role) {
+        case 'driver':
+          navigate('/drivers');
+          break;
+        case 'garage_partner':
+          navigate('/garages');
+          break;
+        case 'airline_partner':
+          navigate('/airlines');
+          break;
+        default:
+          navigate('/book');
+      }
     }
-  }, [user, authLoading, navigate]);
+  }, [user, profile, authLoading, navigate]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -214,7 +227,7 @@ export default function Auth() {
               navigate('/airlines');
               break;
             default:
-              navigate('/book-ride');
+              navigate('/book');
           }
         }, 1000);
       } else {

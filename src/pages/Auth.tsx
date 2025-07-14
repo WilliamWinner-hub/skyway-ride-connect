@@ -35,7 +35,7 @@ type UserRole = 'passenger' | 'driver' | 'garage_partner' | 'airline_partner';
 
 export default function Auth() {
   const navigate = useNavigate();
-  const { user, profile, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading, refreshProfile } = useAuth();
   const [step, setStep] = useState<'email' | 'role' | 'otp'>('email');
   const [email, setEmail] = useState('');
   const [selectedRole, setSelectedRole] = useState<UserRole>('passenger');
@@ -47,21 +47,25 @@ export default function Auth() {
 
   // Redirect if already authenticated
   useEffect(() => {
-    if (user && !authLoading && profile) {
-      // Navigate based on user's role
-      switch (profile.role) {
-        case 'driver':
-          navigate('/drivers');
-          break;
-        case 'garage_partner':
-          navigate('/garages');
-          break;
-        case 'airline_partner':
-          navigate('/airlines');
-          break;
-        default:
-          navigate('/book');
+    if (user && !authLoading) {
+      // If we have profile data, use it for navigation
+      if (profile?.role) {
+        switch (profile.role) {
+          case 'driver':
+            navigate('/drivers');
+            break;
+          case 'garage_partner':
+            navigate('/garages');
+            break;
+          case 'airline_partner':
+            navigate('/airlines');
+            break;
+          default:
+            navigate('/book');
+        }
       }
+      // If no profile yet but user exists, wait for profile to load
+      // (this will trigger again when profile loads)
     }
   }, [user, profile, authLoading, navigate]);
 
@@ -134,6 +138,8 @@ export default function Auth() {
         // Set session in Supabase client if provided
         if (response.session) {
           await supabase.auth.setSession(response.session);
+          // Refresh profile data in AuthContext
+          await refreshProfile();
         }
 
         // Map frontend roles to database enum values (now that we have all enum values)
